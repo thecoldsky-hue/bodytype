@@ -1,0 +1,2460 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>365송도경희한의원 체질 변증 설문</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', -apple-system, sans-serif;
+      background: #f9fafb;
+      color: #1f2937;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(135deg, #1B365D 0%, #2d5a8c 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .logo-svg {
+      height: 65px;
+      margin: 0 auto 20px;
+      display: block;
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      opacity: 0.95;
+      margin-bottom: 12px;
+    }
+
+    .note {
+      font-size: 12px;
+      opacity: 0.85;
+      font-style: italic;
+    }
+
+    .progress-bar {
+      background: rgba(255,255,255,0.2);
+      height: 6px;
+      margin-top: 20px;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: white;
+      height: 100%;
+      transition: width 0.3s ease;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 20px;
+      border-bottom: 1px solid #e5e7eb;
+      background: white;
+    }
+
+    .nav-btn {
+      background: #1B365D;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+
+    .nav-btn:hover:not(:disabled) {
+      background: #2d5a8c;
+    }
+
+    .nav-btn:disabled {
+      background: #cbd5e1;
+      cursor: not-allowed;
+    }
+
+    .page-indicator {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1B365D;
+    }
+
+    main {
+      padding: 24px 20px;
+      min-height: calc(100vh - 240px);
+    }
+
+    .page {
+      display: none;
+    }
+
+    .page.active {
+      display: block;
+      animation: fadeIn 0.3s;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .question-card {
+      margin-bottom: 28px;
+      padding: 0;
+    }
+
+    .question-number {
+      display: inline-block;
+      background: #1B365D;
+      color: white;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      text-align: center;
+      line-height: 32px;
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
+
+    .question-text {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1f2937;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .multi-select-hint {
+      font-size: 12px;
+      color: #10B981;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .option {
+      display: flex;
+      align-items: center;
+      padding: 12px 14px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+
+    .option:hover {
+      background: #f3f4f6;
+      border-color: #d1d5db;
+    }
+
+    .option input[type="radio"],
+    .option input[type="checkbox"] {
+      margin-right: 12px;
+      cursor: pointer;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+
+    .option.selected {
+      border-color: #1B365D;
+      background: #f0f4f9;
+    }
+
+    .option label {
+      cursor: pointer;
+      flex: 1;
+      font-size: 14px;
+    }
+
+    .help-text {
+      font-size: 12px;
+      color: #7f8fa3;
+      margin-top: 10px;
+      padding: 10px;
+      background: #f9fafb;
+      border-left: 3px solid #06B6D4;
+      border-radius: 4px;
+      line-height: 1.5;
+    }
+
+    footer {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px;
+      border-top: 1px solid #e5e7eb;
+      background: white;
+      flex-wrap: wrap;
+    }
+
+    .footer-btn {
+      background: white;
+      color: #1B365D;
+      border: 2px solid #1B365D;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .footer-btn:hover {
+      background: #1B365D;
+      color: white;
+    }
+
+    .footer-btn.submit {
+      background: #1B365D;
+      color: white;
+      border-color: #1B365D;
+    }
+
+    .footer-btn.submit:hover {
+      background: #2d5a8c;
+      border-color: #2d5a8c;
+    }
+
+    /* RESULT PAGE STYLES */
+    .result-page {
+      display: none;
+      padding: 0;
+    }
+
+    .result-page.active {
+      display: block;
+    }
+
+    .result-hero {
+      background: linear-gradient(135deg, #1B365D 0%, #2d5a8c 100%);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .result-hero-name {
+      font-size: 32px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .result-hero-hanja {
+      font-size: 20px;
+      opacity: 0.9;
+      margin-bottom: 12px;
+    }
+
+    .result-hero-desc {
+      font-size: 14px;
+      opacity: 0.95;
+      line-height: 1.6;
+    }
+
+    .result-content {
+      padding: 24px 20px;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 350px;
+      margin-bottom: 32px;
+    }
+
+    .score-cards {
+      display: grid;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .score-card {
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .score-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .score-content {
+      flex: 1;
+    }
+
+    .score-name {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .score-desc {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 8px;
+      line-height: 1.5;
+    }
+
+    .score-bar {
+      background: #e5e7eb;
+      height: 6px;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-bottom: 4px;
+    }
+
+    .score-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width 0.3s;
+    }
+
+    .score-number {
+      font-size: 12px;
+      font-weight: 600;
+      color: #666;
+      text-align: right;
+    }
+
+    .checkpoints {
+      background: #f9fafb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 32px;
+    }
+
+    .checkpoints-title {
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 16px;
+      color: #1f2937;
+    }
+
+    .ckpt-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .ckpt-row:last-child { border-bottom: none; }
+
+    .ckpt-icon {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .ckpt-icon svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .ckpt-bar-wrap { flex: 1; }
+    .ckpt-label { font-size: 11px; font-weight: 600; color: #9ca3af; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+    .ckpt-bar { height: 12px; background: #f3f4f6; border-radius: 6px; overflow: hidden; position: relative; }
+    .ckpt-fill { height: 100%; border-radius: 6px; transition: width 0.8s ease; }
+    .ckpt-pct { font-size: 13px; font-weight: 700; color: #374151; min-width: 40px; text-align: right; }
+    .ckpt-badge { font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
+    .ckpt-badge.good { background: #D1FAE5; color: #065F46; }
+    .ckpt-badge.normal { background: #FEF3C7; color: #92400E; }
+    .ckpt-badge.need { background: #FEE2E2; color: #991B1B; }
+
+    /* Rich Product Cards */
+    .rx-card {
+      background: white;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    .rx-header {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+    .rx-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 800;
+      color: white;
+      flex-shrink: 0;
+    }
+    .rx-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+    .rx-hanja {
+      font-size: 12px;
+      color: #9ca3af;
+      margin-left: 4px;
+    }
+    .rx-ingredients {
+      font-size: 12px;
+      color: #6b7280;
+      margin-top: 2px;
+    }
+    .rx-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0 14px;
+    }
+    .rx-tag {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 4px;
+      color: white;
+    }
+    .rx-mechanism {
+      font-size: 13px;
+      color: #374151;
+      margin-bottom: 14px;
+    }
+    .rx-mechanism-title {
+      font-weight: 600;
+      font-size: 12px;
+      color: #6b7280;
+      margin-bottom: 6px;
+    }
+    .rx-mechanism ol {
+      padding-left: 18px;
+      line-height: 1.8;
+    }
+    .rx-mechanism li {
+      margin-bottom: 2px;
+    }
+    .rx-dosage-box {
+      background: #FEF3C7;
+      border: 1px solid #FCD34D;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #92400E;
+    }
+    .rx-period-box {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      color: #1E40AF;
+      margin-top: 8px;
+    }
+    .rx-consult-card {
+      background: #FFFBEB;
+      border: 2px dashed #F59E0B;
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .rx-consult-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #92400E;
+      margin-bottom: 8px;
+    }
+    .rx-consult-rx {
+      font-size: 14px;
+      font-weight: 600;
+      color: #1B365D;
+      margin: 8px 0;
+    }
+
+    .section-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #1f2937;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #1B365D;
+    }
+
+    .pattern-description {
+      background: #f9fafb;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 32px;
+      line-height: 1.7;
+      font-size: 14px;
+      color: #4b5563;
+    }
+
+    .food-section {
+      background: white;
+      padding: 16px;
+      margin-bottom: 24px;
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+    }
+
+    .food-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: #1f2937;
+    }
+
+    .food-critical {
+      background: #FEE2E2;
+      border-left: 4px solid #EF4444;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #991B1B;
+    }
+
+    .food-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .food-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+    }
+
+    .food-item-icon {
+      flex-shrink: 0;
+      font-weight: 700;
+      color: #1B365D;
+      width: 20px;
+    }
+
+    .food-tea {
+      padding: 8px;
+      background: #f0fdf4;
+      border-left: 3px solid #10B981;
+      border-radius: 4px;
+      font-size: 13px;
+      color: #166534;
+    }
+
+    .lifestyle-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 13px;
+      color: #4b5563;
+      line-height: 1.5;
+    }
+
+    .lifestyle-item:last-child {
+      border-bottom: none;
+    }
+
+    .lifestyle-priority {
+      display: inline-block;
+      background: #1B365D;
+      color: white;
+      padding: 2px 6px;
+      border-radius: 3px;
+      font-size: 11px;
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    .more-toggle {
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      padding: 10px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1B365D;
+      text-align: center;
+      margin-top: 12px;
+      transition: all 0.2s;
+    }
+
+    .more-toggle:hover {
+      background: #e5e7eb;
+    }
+
+    .more-content {
+      display: none;
+      margin-top: 12px;
+    }
+
+    .more-content.active {
+      display: block;
+    }
+
+    .product-card {
+      background: #fafbfc;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .product-name {
+      font-weight: 700;
+      font-size: 14px;
+      color: #1f2937;
+      margin-bottom: 8px;
+    }
+
+    .product-dosage {
+      font-size: 13px;
+      color: #4b5563;
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    .product-prescription {
+      font-size: 12px;
+      color: #7f8fa3;
+      font-style: italic;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .consultation-section {
+      background: linear-gradient(135deg, #f0f4f9 0%, #e8f1f8 100%);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .consultation-title {
+      font-weight: 700;
+      font-size: 16px;
+      color: #1B365D;
+      margin-bottom: 8px;
+    }
+
+    .consultation-phone {
+      font-size: 24px;
+      font-weight: 700;
+      color: #1B365D;
+      margin-bottom: 8px;
+    }
+
+    .consultation-text {
+      font-size: 13px;
+      color: #4b5563;
+      margin-bottom: 12px;
+      line-height: 1.6;
+    }
+
+    .prescription-list {
+      background: white;
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      color: #4b5563;
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    .result-footer {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      padding: 20px;
+      border-top: 1px solid #e5e7eb;
+    }
+
+    .result-footer button {
+      padding: 12px 16px;
+      border: 2px solid #1B365D;
+      background: white;
+      color: #1B365D;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .result-footer button:hover {
+      background: #1B365D;
+      color: white;
+    }
+
+    .result-footer button.primary {
+      background: #1B365D;
+      color: white;
+      grid-column: 1 / -1;
+    }
+
+    @media (max-width: 480px) {
+      header {
+        padding: 30px 16px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .logo-svg {
+        height: 50px;
+      }
+
+      main {
+        padding: 16px;
+      }
+
+      .question-text {
+        font-size: 14px;
+      }
+
+      .result-hero-name {
+        font-size: 26px;
+      }
+
+      .result-footer {
+        grid-template-columns: 1fr;
+      }
+
+      .result-footer button.primary {
+        grid-column: 1;
+      }
+    }
+
+    @media print {
+      header, nav, footer {
+        display: none;
+      }
+
+      body {
+        background: white;
+      }
+
+      .container {
+        max-width: 100%;
+      }
+
+      main {
+        min-height: auto;
+        padding: 0;
+      }
+
+      .question-card {
+        page-break-inside: avoid;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: #1f2937;
+        color: #f3f4f6;
+      }
+
+      .container {
+        background: #111827;
+      }
+
+      nav, footer, .food-section, .product-card {
+        background: #1f2937;
+        border-color: #374151;
+      }
+
+      .option {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f3f4f6;
+      }
+
+      .option:hover {
+        background: #4b5563;
+      }
+
+      .option.selected {
+        background: #1f3a4d;
+      }
+
+      .question-text {
+        color: #f3f4f6;
+      }
+
+      .help-text {
+        background: #1f2937;
+        color: #d1d5db;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <svg class="logo-svg" viewBox="0 0 60 80">
+        <rect x="12" y="5" width="36" height="14" rx="7" fill="white" opacity="0.85"/>
+        <rect x="12" y="25" width="36" height="16" rx="8" fill="white" opacity="0.95"/>
+        <rect x="12" y="47" width="36" height="14" rx="7" fill="white" opacity="0.85"/>
+        <circle cx="6" cy="12" r="2.5" fill="white" opacity="0.7"/>
+        <circle cx="6" cy="33" r="3" fill="white" opacity="0.8"/>
+        <circle cx="6" cy="54" r="2.5" fill="white" opacity="0.7"/>
+      </svg>
+      <h1>365송도경희한의원 체질 변증 설문</h1>
+      <div class="subtitle">3분이면 충분합니다. 나에게 맞는 건강법을 알아보세요</div>
+      <div class="note">정답은 없습니다. 평소 느끼는 대로 편하게 선택해 주세요.</div>
+      <div class="progress-bar">
+        <div class="progress-fill" style="width: 0%"></div>
+      </div>
+    </header>
+
+    <nav>
+      <button class="nav-btn" id="prevBtn" disabled>이전</button>
+      <div class="page-indicator"><span id="currentPage">1</span> / <span id="totalPage">5</span></div>
+      <button class="nav-btn" id="nextBtn">다음</button>
+    </nav>
+
+    <main id="questionnaire">
+      <!-- PAGE 1: 수면·피로·기본상태 (Q1~Q5) -->
+      <div class="page active">
+        <!-- Q1 -->
+        <div class="question-card">
+          <div class="question-number">1</div>
+          <div class="question-text">요즘 잠은 잘 자시나요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q1" value="q1_1" data-pattern="음허:2,기울:1">
+              <span>자주 깨거나 깊이 못 잔다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q1" value="q1_2" data-pattern="담음:1,양허:1">
+              <span>자도 자도 피곤하고 몸이 무겁다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q1" value="q1_3" data-pattern="기울:2,혈허:1">
+              <span>잠들기 어렵거나 생각이 많아 늦게 잠든다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q1" value="q1_4" data-pattern="">
+              <span>잘 자는 편이다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q2 -->
+        <div class="question-card">
+          <div class="question-number">2</div>
+          <div class="question-text">평소 피로도는 어떤가요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q2" value="q2_1" data-pattern="기허:3">
+              <span>항상 피곤하고 쉬어도 회복이 안 된다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q2" value="q2_2" data-pattern="기허:1,담음:1">
+              <span>오후가 되면 기운이 빠진다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q2" value="q2_3" data-pattern="">
+              <span>일상생활에 지장 없을 정도</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q2" value="q2_4" data-pattern="">
+              <span>활력이 넘치고 피곤함을 잘 모른다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q3 -->
+        <div class="question-card">
+          <div class="question-number">3</div>
+          <div class="question-text">아침에 눈을 뜨면 어떤 상태인가요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q3" value="q3_1" data-pattern="담음:2,양허:1">
+              <span>알람이 울려도 못 일어나고 천근만근이다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q3" value="q3_2" data-pattern="양허:1,기허:1">
+              <span>눈은 떠지만 이불 속에서 한참 더 있고 싶다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q3" value="q3_3" data-pattern="담음:1,혈허:1">
+              <span>일어나도 머리가 맑지 않고 멍한 느낌이다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q3" value="q3_4" data-pattern="">
+              <span>비교적 개운하게 일어난다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q4 -->
+        <div class="question-card">
+          <div class="question-number">4</div>
+          <div class="question-text">땀은 어떤 편인가요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q4" value="q4_1" data-pattern="기허:2">
+              <span>조금만 움직여도 땀이 많다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q4" value="q4_2" data-pattern="음허:2">
+              <span>자면서 식은땀이 난다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q4" value="q4_3" data-pattern="양허:1">
+              <span>땀이 잘 안 나는 편이다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q4" value="q4_4" data-pattern="">
+              <span>적당히 나는 편이다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q5 MULTI-SELECT -->
+        <div class="question-card">
+          <div class="question-number">5</div>
+          <div class="question-text">피부 상태는 어떤 편인가요?</div>
+          <div class="multi-select-hint">✅ 해당되는 것 모두 선택해 주세요</div>
+          <div class="options">
+            <label class="option">
+              <input type="checkbox" name="q5" value="q5_1" data-pattern="혈허:1,음허:2">
+              <span>건조하고 각질이 잘 일어난다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q5" value="q5_2" data-pattern="습열:2">
+              <span>여드름이나 뾰루지가 자주 난다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q5" value="q5_3" data-pattern="혈허:1,기울:1">
+              <span>가렵거나 두드러기가 잘 나온다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q5" value="q5_4" data-pattern="어혈:1,혈허:1">
+              <span>칙칙하고 기미·잡티가 많다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q5" value="q5_5" data-pattern="">
+              <span>건강한 편이다</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 2: 체온·한열·호흡기 (Q6~Q10) -->
+      <div class="page">
+        <!-- Q6 -->
+        <div class="question-card">
+          <div class="question-number">6</div>
+          <div class="question-text">손발 온도와 추위/더위 민감도는?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q6" value="q6_1" data-pattern="양허:2">
+              <span>손발이 항상 차고 추위를 잘 탄다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q6" value="q6_2" data-pattern="음허:1,습열:1">
+              <span>더위를 많이 타고 손발이 뜨거운 편이다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q6" value="q6_3" data-pattern="양허:1">
+              <span>따뜻한 것을 좋아하지만 특별히 춥진 않다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q6" value="q6_4" data-pattern="">
+              <span>적당한 편이다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q7 -->
+        <div class="question-card">
+          <div class="question-number">7</div>
+          <div class="question-text">밤중에 화장실에 자주 가시나요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q7" value="q7_1" data-pattern="양허:2">
+              <span>매일 1~2회 이상 깨서 간다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q7" value="q7_2" data-pattern="양허:1">
+              <span>주 2~3회 정도 간다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q7" value="q7_3" data-pattern="">
+              <span>거의 안 간다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q8 -->
+        <div class="question-card">
+          <div class="question-number">8</div>
+          <div class="question-text">얼굴이나 몸에 열이 오르는 경우가 있나요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q8" value="q8_1" data-pattern="음허:2">
+              <span>오후/저녁에 화끈거리고 손발바닥이 뜨겁다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q8" value="q8_2" data-pattern="기울:1,woohwang:1">
+              <span>긴장하면 얼굴이 확 빨개진다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q8" value="q8_3" data-pattern="습열:1,기허:1">
+              <span>조금만 움직여도 얼굴이 달아오른다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q8" value="q8_4" data-pattern="기울:2">
+              <span>스트레스 받으면 머리·목에 열이 확 오른다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q8" value="q8_5" data-pattern="">
+              <span>특별히 열감은 없다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q9 -->
+        <div class="question-card">
+          <div class="question-number">9</div>
+          <div class="question-text">비 오거나 습한 날에 몸 상태 변화가 있나요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q9" value="q9_1" data-pattern="한습:3">
+              <span>관절이 쑤시고 몸이 무거워진다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q9" value="q9_2" data-pattern="담음:2,한습:1">
+              <span>소화가 안 되고 머리가 무겁다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q9" value="q9_3" data-pattern="">
+              <span>별 차이 없다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q10 MULTI-SELECT -->
+        <div class="question-card">
+          <div class="question-number">10</div>
+          <div class="question-text">코, 목, 가래 상태는?</div>
+          <div class="multi-select-hint">✅ 해당되는 것 모두 선택해 주세요</div>
+          <div class="options">
+            <label class="option">
+              <input type="checkbox" name="q10" value="q10_1" data-pattern="기허:2,양허:1">
+              <span>뜨거운 음식을 먹으면 콧물이 줄줄 난다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q10" value="q10_2" data-pattern="기허:1,양허:1,한습:1">
+              <span>코가 자주 막히고 맑은 콧물이 난다 (비염)</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q10" value="q10_3" data-pattern="음허:2,혈허:1">
+              <span>코 안이 건조하고 코딱지가 자주 생긴다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q10" value="q10_4" data-pattern="담음:2">
+              <span>가래가 자주 끼고 끈적끈적하다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q10" value="q10_5" data-pattern="습열:2">
+              <span>노란 가래나 코가 나온다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q10" value="q10_6" data-pattern="">
+              <span>특별한 문제 없다</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 3: 소화·대소변·구강 (Q11~Q15) -->
+      <div class="page">
+        <!-- Q11 MULTI-SELECT -->
+        <div class="question-card">
+          <div class="question-number">11</div>
+          <div class="question-text">소화 상태는?</div>
+          <div class="multi-select-hint">✅ 해당되는 것 모두 선택해 주세요</div>
+          <div class="options">
+            <label class="option">
+              <input type="checkbox" name="q11" value="q11_1" data-pattern="기허:1,식적:1,담음:1">
+              <span>먹으면 항상 더부룩하고 가스가 찬다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q11" value="q11_2" data-pattern="습열:1,기울:1">
+              <span>속이 쓰리고 신물이 올라온다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q11" value="q11_3" data-pattern="기허:2">
+              <span>밥맛이 없고 식욕이 떨어졌다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q11" value="q11_4" data-pattern="식적:2">
+              <span>잘 체하고 과식하면 오래간다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q11" value="q11_5" data-pattern="식적:1,기울:1,습열:1">
+              <span>가슴이 뻐근하거나 답답하다 (식후 악화)</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q11" value="q11_6" data-pattern="">
+              <span>소화가 잘 되는 편이다</span>
+            </label>
+          </div>
+          <div class="help-text">💡 가슴 답답함이 식후에 악화되면 역류성식도염 가능성이 있습니다. 심장 문제와 혼동하기 쉬우니 지속되면 상담하세요.</div>
+        </div>
+
+        <!-- Q12 -->
+        <div class="question-card">
+          <div class="question-number">12</div>
+          <div class="question-text">대변은 어떤 편인가요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q12" value="q12_1" data-pattern="양허:1,한습:1">
+              <span>묽거나 무른 편이다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q12" value="q12_2" data-pattern="담음:2,습열:1">
+              <span>끈적이고 잔변감이 있다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q12" value="q12_3" data-pattern="음허:1,어혈:1">
+              <span>딱딱하고 변비 경향이 있다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q12" value="q12_4" data-pattern="기허:1,양허:1">
+              <span>하루 3회 이상 자주 본다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q12" value="q12_5" data-pattern="">
+              <span>1일 1~2회, 정상이다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q13 -->
+        <div class="question-card">
+          <div class="question-number">13</div>
+          <div class="question-text">소변 상태는?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q13" value="q13_1" data-pattern="양허:2">
+              <span>맑고 자주 본다 (특히 밤에)</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q13" value="q13_2" data-pattern="습열:2">
+              <span>진하고 냄새가 강하다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q13" value="q13_3" data-pattern="담음:1,습열:1,어혈:1">
+              <span>봐도 시원하지 않다 (잔뇨감)</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q13" value="q13_4" data-pattern="기허:1,양허:1">
+              <span>잘 안 나오거나 힘을 줘야 나온다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q13" value="q13_5" data-pattern="">
+              <span>정상이다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q14 -->
+        <div class="question-card">
+          <div class="question-number">14</div>
+          <div class="question-text">입과 구강 상태는?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q14" value="q14_1" data-pattern="식적:1,습열:1">
+              <span>아침에 입 냄새가 심하고 혀에 백태가 낀다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q14" value="q14_2" data-pattern="음허:2">
+              <span>입이 건조하고 물을 자주 마신다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q14" value="q14_3" data-pattern="담음:1,습열:1">
+              <span>입 안이 개운하지 않고 끈적거린다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q14" value="q14_4" data-pattern="">
+              <span>특별한 문제 없다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q15 -->
+        <div class="question-card">
+          <div class="question-number">15</div>
+          <div class="question-text">물이나 음료는 어떻게 드시나요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q15" value="q15_1" data-pattern="음허:2,습열:1">
+              <span>찬물을 자주, 많이 마신다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q15" value="q15_2" data-pattern="양허:1,한습:1">
+              <span>따뜻한 물·차를 선호한다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q15" value="q15_3" data-pattern="담음:1,양허:1">
+              <span>물을 잘 안 마시는 편이다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q15" value="q15_4" data-pattern="">
+              <span>보통으로 마신다</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 4: 감정·스트레스·통증·순환 (Q16~Q20) -->
+      <div class="page">
+        <!-- Q16 MULTI-SELECT -->
+        <div class="question-card">
+          <div class="question-number">16</div>
+          <div class="question-text">기분이나 감정 상태는?</div>
+          <div class="multi-select-hint">✅ 해당되는 것 모두 선택해 주세요</div>
+          <div class="options">
+            <label class="option">
+              <input type="checkbox" name="q16" value="q16_1" data-pattern="기울:2,음허:1,woohwang:1">
+              <span>자주 불안하거나 초조하다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q16" value="q16_2" data-pattern="기울:2,습열:1">
+              <span>쉽게 짜증나고 화가 올라온다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q16" value="q16_3" data-pattern="기허:2,혈허:1">
+              <span>의욕이 없고 무기력하다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q16" value="q16_4" data-pattern="기울:1,혈허:1">
+              <span>감정 기복이 심한 편이다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q16" value="q16_5" data-pattern="">
+              <span>대체로 안정적이다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q17 -->
+        <div class="question-card">
+          <div class="question-number">17</div>
+          <div class="question-text">가슴이나 옆구리가 답답한 느낌이 있나요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q17" value="q17_1" data-pattern="기울:2">
+              <span>자주 답답하고 한숨이 나온다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q17" value="q17_2" data-pattern="기울:2,담음:1">
+              <span>목에 뭔가 걸린 듯한 이물감이 있다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q17" value="q17_3" data-pattern="기울:1">
+              <span>스트레스 받을 때만 그렇다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q17" value="q17_4" data-pattern="">
+              <span>특별히 없다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q18 -->
+        <div class="question-card">
+          <div class="question-number">18</div>
+          <div class="question-text">통증이 있다면 어떤 양상인가요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q18" value="q18_1" data-pattern="어혈:3">
+              <span>한 곳이 찌르듯이 아프다 (고정통)</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q18" value="q18_2" data-pattern="기울:2">
+              <span>여기저기 돌아다니며 아프다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q18" value="q18_3" data-pattern="한습:2,담음:1">
+              <span>무겁게 뻐근한 느낌이다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q18" value="q18_4" data-pattern="">
+              <span>특별한 통증은 없다</span>
+            </label>
+          </div>
+          <div class="help-text">💡 어깨, 허리, 생리통 등 평소 자주 느끼는 통증의 양상을 떠올려 보세요</div>
+        </div>
+
+        <!-- Q19 -->
+        <div class="question-card">
+          <div class="question-number">19</div>
+          <div class="question-text">혈액순환 상태는?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q19" value="q19_1" data-pattern="어혈:2">
+              <span>멍이 잘 들고 쉽게 생긴다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q19" value="q19_2" data-pattern="혈허:1,어혈:1">
+              <span>손발이 저리거나 쥐가 자주 난다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q19" value="q19_3" data-pattern="어혈:2,담음:1">
+              <span>하지정맥류가 있거나 다리가 무겁다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q19" value="q19_4" data-pattern="어혈:1,혈허:1">
+              <span>얼굴이 칙칙하거나 다크서클이 심하다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q19" value="q19_5" data-pattern="">
+              <span>특별한 문제 없다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q20 MULTI-SELECT -->
+        <div class="question-card" data-multi="true">
+          <div class="question-number">20</div>
+          <div class="question-text">스트레스나 걱정으로 인한 신체 증상이 있나요?</div>
+          <div style="font-size:12px;color:#10B981;font-weight:600;margin-bottom:8px;">✅ 해당되는 것 모두 선택해 주세요</div>
+          <div class="options">
+            <label class="option">
+              <input type="checkbox" name="q20" value="q20_1" data-pattern="기울:2">
+              <span>스트레스 받으면 소화가 안 된다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q20" value="q20_2" data-pattern="기울:1,woohwang:2,brain:1">
+              <span>긴장하면 가슴이 두근거린다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q20" value="q20_3" data-pattern="기울:1,어혈:1">
+              <span>머리가 아프거나 어깨가 뻐근해진다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q20" value="q20_4" data-pattern="기울:1,담음:1">
+              <span>잠이 안 오거나 꿈을 많이 꾼다</span>
+            </label>
+            <label class="option">
+              <input type="checkbox" name="q20" value="q20_5" data-pattern="">
+              <span>스트레스 영향을 잘 안 받는 편이다</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- PAGE 5: 부종·체중·식습관·생리 (Q21~Q25) -->
+      <div class="page">
+        <!-- Q21 -->
+        <div class="question-card">
+          <div class="question-number">21</div>
+          <div class="question-text">아침에 얼굴이나 손발이 붓는 편인가요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q21" value="q21_1" data-pattern="담음:2,양허:1">
+              <span>아침마다 얼굴이 붓는다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q21" value="q21_2" data-pattern="담음:1,기허:1">
+              <span>오후가 되면 다리가 붓는다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q21" value="q21_3" data-pattern="담음:2,한습:1">
+              <span>반지가 꽉 끼거나 양말 자국이 오래 남는다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q21" value="q21_4" data-pattern="">
+              <span>붓는 편이 아니다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q22 -->
+        <div class="question-card">
+          <div class="question-number">22</div>
+          <div class="question-text">체중 관리는 어떤 편인가요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q22" value="q22_1" data-pattern="담음:2,양허:1">
+              <span>물만 마셔도 살이 찌는 느낌이다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q22" value="q22_2" data-pattern="담음:2,기허:1">
+              <span>다이어트를 해도 잘 안 빠진다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q22" value="q22_3" data-pattern="기허:1,음허:1">
+              <span>특별히 안 먹어도 살이 빠진다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q22" value="q22_4" data-pattern="">
+              <span>적정 체중을 잘 유지하고 있다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q23 -->
+        <div class="question-card">
+          <div class="question-number">23</div>
+          <div class="question-text">과식하거나 야식을 먹는 빈도는?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q23" value="q23_1" data-pattern="식적:3,습열:1">
+              <span>주 3회 이상 과식하거나 야식을 먹는다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q23" value="q23_2" data-pattern="식적:1">
+              <span>주 1~2회 정도</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q23" value="q23_3" data-pattern="">
+              <span>거의 안 한다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q23" value="q23_4" data-pattern="기허:1">
+              <span>오히려 입맛이 없어 잘 못 먹는다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q24 -->
+        <div class="question-card">
+          <div class="question-number">24</div>
+          <div class="question-text">머리카락이나 손톱 상태는?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q24" value="q24_1" data-pattern="혈허:2">
+              <span>머리카락이 잘 빠지거나 가늘어졌다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q24" value="q24_2" data-pattern="혈허:1,어혈:1">
+              <span>손톱이 잘 부러지거나 울퉁불퉁하다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q24" value="q24_3" data-pattern="">
+              <span>건강한 편이다</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Q25 -->
+        <div class="question-card">
+          <div class="question-number">25</div>
+          <div class="question-text">(여성) 월경은 어떤 편인가요?</div>
+          <div class="options">
+            <label class="option">
+              <input type="radio" name="q25" value="q25_1" data-pattern="혈허:2">
+              <span>양이 적거나 색이 연하다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q25" value="q25_2" data-pattern="어혈:3">
+              <span>생리통이 심하고 핏덩어리가 나온다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q25" value="q25_3" data-pattern="기울:1,혈허:1">
+              <span>주기가 불규칙하다</span>
+            </label>
+            <label class="option">
+              <input type="radio" name="q25" value="q25_4" data-pattern="">
+              <span>정상이다 / 해당 없음</span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULT PAGE -->
+      <div class="result-page">
+        <div class="result-hero">
+          <div class="result-hero-name" id="resultName">-</div>
+          <div class="result-hero-hanja" id="resultHanja">-</div>
+          <div class="result-hero-desc" id="resultDesc">-</div>
+        </div>
+
+        <div class="result-content">
+          <div class="chart-container">
+            <canvas id="radarChart"></canvas>
+          </div>
+
+          <div class="score-cards" id="scoreCards"></div>
+
+          <div class="checkpoints">
+            <div class="checkpoints-title">📋 건강 관리 체크포인트</div>
+            <div id="checkpointsContent"></div>
+          </div>
+
+          <div class="section-title">변증 설명</div>
+          <div class="pattern-description" id="patternDescription">-</div>
+
+          <div class="section-title">🍽️ 음식 관리</div>
+          <div id="foodSection"></div>
+
+          <div class="section-title">🌟 생활 관리</div>
+          <div id="lifestyleSection"></div>
+
+          <div class="section-title">💊 제품 추천</div>
+          <div id="productSection"></div>
+
+          <div class="consultation-section">
+            <div class="consultation-title">전문가 상담</div>
+            <div class="consultation-phone">032-721-8575</div>
+            <div class="consultation-text">나의 체질 변증에 맞는 한약 처방과 건강 관리 방법을 상담받으세요</div>
+            <div class="prescription-list" id="prescriptionList"></div>
+          </div>
+
+          <div class="result-footer" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:24px;">
+            <button onclick="printResult()" style="flex:1;min-width:100px;padding:14px 16px;border:1.5px solid #e5e7eb;border-radius:10px;background:white;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              인쇄하기
+            </button>
+            <button onclick="shareKakao()" style="flex:1;min-width:100px;padding:14px 16px;border:1.5px solid #e5e7eb;border-radius:10px;background:white;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              결과 공유
+            </button>
+            <button onclick="callClinic()" style="flex:1;min-width:100px;padding:14px 16px;border:none;border-radius:10px;background:#1B365D;color:white;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:all 0.15s;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+              상담 예약
+            </button>
+            <button onclick="restartTest()" style="width:100%;padding:12px;border:1.5px solid #e5e7eb;border-radius:10px;background:white;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;color:#9ca3af;margin-top:4px;">
+              🔄 다시 시작
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <button class="footer-btn" id="footerPrevBtn" disabled>이전</button>
+      <button class="footer-btn submit" id="footerNextBtn">다음</button>
+    </footer>
+  </div>
+
+  <script>
+    // ========================================
+    // DATA STRUCTURES
+    // ========================================
+    var patterns = {
+      '기허': { hanja: '氣', color: '#3B82F6', desc: '기력이 부족하여 피로하고 무기력한 상태' },
+      '혈허': { hanja: '血', color: '#EC4899', desc: '혈액이 부족하여 영양 공급이 원활하지 않은 상태' },
+      '음허': { hanja: '陰', color: '#F59E0B', desc: '체내 진액이 부족하여 열감과 건조증이 있는 상태' },
+      '양허': { hanja: '陽', color: '#06B6D4', desc: '소화·대사 기능이 저하되어 냉증과 부종이 있는 상태' },
+      '기울': { hanja: '鬱', color: '#10B981', desc: '스트레스로 인해 기운의 흐름이 막혀 답답한 상태' },
+      '어혈': { hanja: '瘀', color: '#8B5CF6', desc: '혈액순환이 원활하지 않아 통증과 어두운 피부색' },
+      '담음': { hanja: '痰', color: '#A855F7', desc: '수분 대사가 안 되어 부종과 무거움이 있는 상태' },
+      '식적': { hanja: '積', color: '#F97316', desc: '소화 기능 저하로 음식이 적체되는 상태' },
+      '한습': { hanja: '寒', color: '#64748B', desc: '찬 기운과 습기가 몸에 축적된 상태' },
+      '습열': { hanja: '熱', color: '#EF4444', desc: '습기와 열이 결합하여 염증이 생기는 상태' }
+    };
+
+    var foodData = {
+      '기허': {
+        critical: '찬 음료, 냉수',
+        good: '인삼, 대추, 닭고기, 찹쌀, 고구마, 산약, 꿀, 소고기',
+        avoid: '냉면, 아이스크림, 밀가루',
+        tea: '인삼차, 대추차, 황기차'
+      },
+      '혈허': {
+        critical: '카페인 과다',
+        good: '시금치, 당근, 검은깨, 대추, 구기자, 흑미, 석류',
+        avoid: '커피과다, 야식, 술',
+        tea: '당귀차, 구기자차'
+      },
+      '음허': {
+        critical: '매운 음식',
+        good: '배, 연근, 검은콩, 두부, 오리고기, 백합',
+        avoid: '매운것, 술, 커피, 양고기',
+        tea: '맥문동차, 오미자차, 국화차'
+      },
+      '양허': {
+        critical: '찬 음식, 아이스크림',
+        good: '생강, 계피, 부추, 양고기, 호두, 마늘, 대파',
+        avoid: '냉면, 아이스크림, 수박, 맥주',
+        tea: '생강차, 계피차'
+      },
+      '기울': {
+        critical: '술',
+        good: '귤, 매실, 셀러리, 부추, 민트',
+        avoid: '술, 카페인과다, 패스트푸드',
+        tea: '장미차, 캐모마일차'
+      },
+      '어혈': {
+        critical: '기름진 음식',
+        good: '양파, 부추, 생강, 마늘, 연어, 토마토',
+        avoid: '튀김, 포화지방',
+        tea: '홍화차, 당귀차'
+      },
+      '담음': {
+        critical: '밀가루, 빵, 떡',
+        good: '율무, 보리, 팥, 미나리, 무, 해조류',
+        avoid: '밀가루, 유제품, 단것',
+        tea: '율무차, 보리차'
+      },
+      '식적': {
+        critical: '과식, 야식',
+        good: '무, 산사, 매실, 양배추, 키위',
+        avoid: '야식, 인스턴트, 폭식',
+        tea: '매실차, 보이차'
+      },
+      '한습': {
+        critical: '찬 음식, 맥주',
+        good: '생강, 계피, 쑥, 팥, 마늘, 카레',
+        avoid: '맥주, 찬우유, 아이스크림',
+        tea: '쑥차, 생강차'
+      },
+      '습열': {
+        critical: '기름진 음식, 술',
+        good: '율무, 녹두, 오이, 수박, 결명자',
+        avoid: '기름진것, 술, 초콜릿',
+        tea: '결명자차, 녹차'
+      }
+    };
+
+    var lifestyleData = {
+      '기허': [
+        '🌙 충분한 수면 7~8시간',
+        '😴 과로 피하고 적절한 휴식',
+        '🍳 아침식사 거르지 않기',
+        '🚶 가벼운 산책 20분',
+        '🔥 배 따뜻하게 유지'
+      ],
+      '혈허': [
+        '🌙 밤 11시 전 취침',
+        '📱 스마트폰/PC 장시간 자제',
+        '🧘 요가/스트레칭',
+        '🥬 철분 풍부한 음식',
+        '🛁 반신욕'
+      ],
+      '음허': [
+        '🌙 밤 11시 전 취침 필수',
+        '💧 충분한 수분 섭취',
+        '🧘 명상/호흡법 10분',
+        '💨 실내 습도 50~60%',
+        '🚫 과도한 사우나 피하기'
+      ],
+      '양허': [
+        '☀️ 아침 햇볕 15분 쬐기',
+        '🔥 배/허리 따뜻하게 (복대)',
+        '🦶 발 따뜻하게 (수면양말)',
+        '🏃 찬 바닥 앉지 않기',
+        '💪 규칙적 운동'
+      ],
+      '기울': [
+        '🏃 유산소 운동 주3~4회 30분',
+        '🌬️ 깊은 호흡법 (4-7-8)',
+        '🎨 좋아하는 취미 유지',
+        '💬 억눌린 감정 표현하기',
+        '🌲 자연 속 산책'
+      ],
+      '어혈': [
+        '🏃 규칙적 유산소 운동',
+        '🤸 1시간마다 스트레칭',
+        '🛁 족욕 꾸준히',
+        '🚫 다리꼬기 피하기',
+        '💧 따뜻한 물 자주'
+      ],
+      '담음': [
+        '💦 유산소 운동 (땀 흘리기)',
+        '🍽️ 과식/야식 절대 피하기',
+        '🚶 식후 10분 산책',
+        '💨 습한 환경 피하기',
+        '🥗 가벼운 식사'
+      ],
+      '식적': [
+        '🥄 8분 포만감에 멈추기',
+        '🍴 천천히 30번 씹기',
+        '🚫 식후 바로 눕지 않기',
+        '⏰ 식사시간 규칙적으로',
+        '💆 배 시계방향 마사지'
+      ],
+      '한습': [
+        '🔥 몸 따뜻하게 (특히 하체)',
+        '🛁 따뜻한 반신욕 주2~3회',
+        '🤸 아침 스트레칭 10분',
+        '💨 습기 찬 환경 피하기',
+        '💪 가벼운 근력운동'
+      ],
+      '습열': [
+        '🍷 과도한 음주 절제',
+        '🍕 기름진/자극적 음식 줄이기',
+        '🏃 규칙적 유산소 운동',
+        '💧 충분한 수분 섭취',
+        '👕 통풍 잘 되는 옷'
+      ]
+    };
+
+    // ========================================
+    // RICH PRODUCT CATALOG (matching clinic image)
+    // ========================================
+    var productCatalog = {
+      '경옥고': {
+        icon: '補', iconColor: '#8B6914',
+        hanja: '瓊玉膏',
+        ingredients: '생지황·인삼·백복령·봉밀',
+        tags: [{ text: '폐음 보충', color: '#7C3AED' }, { text: '신장 충전', color: '#2563EB' }, { text: '기혈 생성', color: '#059669' }],
+        mechanism: [
+          '생지황 → 신음(腎陰) 자양, 허열 제거',
+          '인삼 → 비폐 기능 강화, 진액 생성 촉진',
+          '복령 → 비위 수습 운화, 담음 제거',
+          '봉밀 → 약성 조화, 폐·위 윤조(潤燥)'
+        ],
+        dosage: '1일 1~2회, 1회 1포 (식전 또는 공복)',
+        minPeriod: '최소 4주', medPeriod: '4~8주', highPeriod: '8~12주'
+      },
+      '공진단': {
+        icon: '丹', iconColor: '#9333EA',
+        hanja: '拱辰丹',
+        ingredients: '녹용·당귀·산수유·사향',
+        tags: [{ text: '신양 보강', color: '#DC2626' }, { text: '선천지기 충전', color: '#7C3AED' }, { text: '기혈 순환', color: '#2563EB' }],
+        mechanism: [
+          '녹용 → 신양(腎陽) 온보, 정수(精髓) 충전',
+          '당귀 → 혈(血) 보충, 혈행 촉진',
+          '산수유 → 신간(腎肝) 정기 수렴 고섭',
+          '사향 → 제약 인경(引經), 혈뇌장벽 투과 촉진'
+        ],
+        dosage: '1일 1회, 1환 (아침 공복)',
+        minPeriod: '최소 3주', medPeriod: '3~6주', highPeriod: '6~12주'
+      },
+      '총명공진단': {
+        icon: '聰', iconColor: '#2563EB',
+        hanja: '聰明拱辰丹',
+        ingredients: '공진단 + 원지·석창포·백복신',
+        tags: [{ text: '심신 교통', color: '#7C3AED' }, { text: '개규성신', color: '#2563EB' }, { text: '담음 제거', color: '#059669' }],
+        mechanism: [
+          '공진단 기본방 → 신양·기혈 기초 보강',
+          '원지 → 심신교통(心腎交通), 안신 작용',
+          '석창포 → 개규(開竅), 담탁(痰濁) 제거',
+          '백복신 → 심비(心脾) 안정, 불면·건망 개선'
+        ],
+        dosage: '1일 1회, 1환 (아침 공복)',
+        minPeriod: '최소 3주', medPeriod: '3~6주', highPeriod: '6~12주'
+      },
+      '쌍화탕': {
+        icon: '雙', iconColor: '#B45309',
+        hanja: '雙和湯',
+        ingredients: '황기·숙지황·백작약·당귀·천궁',
+        tags: [{ text: '기혈 쌍보', color: '#DC2626' }, { text: '비위 강화', color: '#D97706' }, { text: '근골 회복', color: '#059669' }],
+        mechanism: [
+          '황기 → 보기승양(補氣升陽), 위기(衛氣) 강화',
+          '숙지황·당귀 → 음혈(陰血) 보충',
+          '백작약 → 간혈(肝血) 보양, 근맥 이완',
+          '천궁 → 혈행 촉진, 어혈(瘀血) 해소'
+        ],
+        dosage: '1일 2~3회, 1회 1포 (식후 30분)',
+        minPeriod: '최소 2주', medPeriod: '3~4주', highPeriod: '4~8주'
+      },
+      '십전대보탕': {
+        icon: '十', iconColor: '#059669',
+        hanja: '十全大補湯',
+        ingredients: '사군자탕 + 사물탕 + 황기·육계',
+        tags: [{ text: '기혈 전면 보충', color: '#DC2626' }, { text: '양기 온보', color: '#D97706' }, { text: '면역 강화', color: '#059669' }],
+        mechanism: [
+          '사군자탕(인삼·백출·복령·감초) → 비위 기허 보강',
+          '사물탕(숙지황·당귀·백작약·천궁) → 혈허 보충',
+          '황기 → 보기고표(補氣固表), 면역 강화',
+          '육계 → 명문화(命門火) 온보, 양기 부활'
+        ],
+        dosage: '1일 2~3회, 1회 1포 (식후 30분)',
+        minPeriod: '최소 3주', medPeriod: '4~6주', highPeriod: '6~12주'
+      },
+      '천왕보심단': {
+        icon: '心', iconColor: '#7C3AED',
+        hanja: '天王補心丹',
+        ingredients: '생지황·현삼·천문동·단삼·원지 등',
+        tags: [{ text: '심음 보양', color: '#7C3AED' }, { text: '안신 녕심', color: '#2563EB' }, { text: '허열 청소', color: '#DC2626' }],
+        mechanism: [
+          '생지황·현삼·천문동 → 심신(心腎) 음허 보충',
+          '단삼·당귀 → 심혈(心血) 보양, 혈행 개선',
+          '원지·산조인·백자인 → 안신(安神), 수면 안정',
+          '오미자·백복신 → 심기(心氣) 수렴, 도한 억제'
+        ],
+        dosage: '1일 2~3회, 1회 1포 (취침 30분~1시간 전 1회 포함)',
+        minPeriod: '최소 2주', medPeriod: '3~4주', highPeriod: '4~8주'
+      },
+      '우황청심원': {
+        icon: '牛', iconColor: '#B45309',
+        hanja: '牛黃清心元',
+        ingredients: '우황·사향·산약·감초 등',
+        tags: [{ text: '청심 개규', color: '#DC2626' }, { text: '진정 안신', color: '#7C3AED' }, { text: '중풍 예방', color: '#2563EB' }],
+        mechanism: [
+          '우황 → 청심(清心) 해독, 담열(痰熱) 제거',
+          '사향 → 개규(開竅), 의식 회복',
+          '산약·감초 → 비위 보호, 약성 조화',
+          '긴장·두근거림·중풍 전조 시 응급 안정'
+        ],
+        dosage: '증상 발현 시 1환 복용',
+        minPeriod: '상비약', medPeriod: '상비약', highPeriod: '상비약'
+      }
+    };
+
+    // ========================================
+    // PRESCRIPTION CATALOG (20 대표처방)
+    // ========================================
+    var prescriptionCatalog = {
+      '보중익기탕': { icon:'補', iconColor:'#3B82F6', hanja:'補中益氣湯', ingredients:'황기·인삼·백출·당귀·승마·시호·진피·감초', tags:[{text:'보기승양',color:'#3B82F6'},{text:'비위강화',color:'#059669'},{text:'면역증진',color:'#7C3AED'}], mechanism:['황기 → 보기고표(補氣固表), 위기 강화','인삼 → 대보원기, 비폐 기능 강화','백출 → 건비조습, 비위 운화 촉진','승마·시호 → 승양거함, 처진 기운 끌어올림'], application:'만성피로, 식욕부진, 기력저하, 내장하수' },
+      '사군자탕': { icon:'君', iconColor:'#3B82F6', hanja:'四君子湯', ingredients:'인삼·백출·복령·감초', tags:[{text:'익기건비',color:'#3B82F6'},{text:'기본보기',color:'#059669'}], mechanism:['인삼 → 대보원기, 비폐 기허 보충','백출 → 건비익기, 수습 운화','복령 → 이수삼습, 비위 건운','감초 → 조화제약, 비위 보익'], application:'비위기허, 소화불량, 식후피곤' },
+      '사물탕': { icon:'血', iconColor:'#EC4899', hanja:'四物湯', ingredients:'숙지황·당귀·백작약·천궁', tags:[{text:'보혈조경',color:'#EC4899'},{text:'혈허기본',color:'#DC2626'},{text:'여성건강',color:'#7C3AED'}], mechanism:['숙지황 → 자음보혈, 간신 정혈 보충','당귀 → 보혈활혈, 혈행 촉진','백작약 → 양혈유간, 근맥 이완','천궁 → 활혈행기, 혈중기약'], application:'빈혈, 생리불순, 산후허약, 어지럼증' },
+      '당귀보혈탕': { icon:'歸', iconColor:'#EC4899', hanja:'當歸補血湯', ingredients:'황기·당귀 (5:1 비율)', tags:[{text:'보기생혈',color:'#EC4899'},{text:'허열제거',color:'#F59E0B'}], mechanism:['황기(대량) → 대보비폐지기, 기왕혈생','당귀 → 보혈화혈, 혈맥 충실','기혈 상호 자생 원리 활용','허열(虛熱) 자연 소퇴'], application:'출혈후허약, 산후빈혈, 갱년기열감' },
+      '육미지황탕': { icon:'陰', iconColor:'#F59E0B', hanja:'六味地黃湯', ingredients:'숙지황·산수유·산약·택사·목단피·복령', tags:[{text:'자보신음',color:'#F59E0B'},{text:'허열청소',color:'#DC2626'},{text:'진액보충',color:'#2563EB'}], mechanism:['숙지황 → 자음보신, 신정 충전','산수유 → 보간익신, 정기 수렴','산약 → 보비익폐, 신정 고섭','택사·목단피·복령 → 삼사(三瀉), 허화 청열'], application:'음허화왕, 구건갈증, 오후열감, 도한' },
+      '자음강화탕': { icon:'滋', iconColor:'#F59E0B', hanja:'滋陰降火湯', ingredients:'숙지황·생지황·백작약·천문동·맥문동·지모·황백 등', tags:[{text:'자음청열',color:'#F59E0B'},{text:'허화하강',color:'#DC2626'},{text:'갱년기',color:'#7C3AED'}], mechanism:['숙지황·생지황 → 대보신음','천문동·맥문동 → 윤폐자신, 진액 보충','지모·황백 → 청허열, 상화 제어','백작약 → 양음유간, 허열 진정'], application:'갱년기증후군, 만성구갈, 야간조열' },
+      '팔미지황탕': { icon:'陽', iconColor:'#06B6D4', hanja:'八味地黃湯', ingredients:'육미지황탕 + 부자·육계', tags:[{text:'온보신양',color:'#06B6D4'},{text:'명문화보',color:'#DC2626'},{text:'냉증개선',color:'#2563EB'}], mechanism:['육미지황탕 → 신음 기초 보강','부자 → 회양구역, 신양 온보','육계 → 인화귀원, 명문화 보충','음양쌍보 원리 (음 속에서 양을 기름)'], application:'신양허, 수족냉증, 야간빈뇨, 하지무력' },
+      '진무탕': { icon:'武', iconColor:'#06B6D4', hanja:'眞武湯', ingredients:'부자·백출·복령·백작약·생강', tags:[{text:'온양이수',color:'#06B6D4'},{text:'비신양허',color:'#2563EB'},{text:'부종제거',color:'#059669'}], mechanism:['부자 → 온신조양, 한수 제거','백출·복령 → 건비이수, 습 제거','백작약 → 이소변, 수습 배출','생강 → 온중산한, 비위 온화'], application:'양허수범, 전신부종, 냉증설사, 현훈' },
+      '소요산': { icon:'遙', iconColor:'#10B981', hanja:'逍遙散', ingredients:'시호·당귀·백작약·백출·복령·박하·생강·감초', tags:[{text:'소간해울',color:'#10B981'},{text:'건비양혈',color:'#2563EB'},{text:'여성질환',color:'#7C3AED'}], mechanism:['시호 → 소간해울, 기울 해소','당귀·백작약 → 양혈유간','백출·복령 → 건비거습','박하 → 소산울열'], application:'간기울결, 월경불순, 스트레스성소화불량' },
+      '시호소간산': { icon:'柴', iconColor:'#10B981', hanja:'柴胡疏肝散', ingredients:'시호·향부자·천궁·백작약·지각·진피·감초', tags:[{text:'소간이기',color:'#10B981'},{text:'활혈지통',color:'#8B5CF6'},{text:'옆구리통',color:'#DC2626'}], mechanism:['시호·향부자 → 소간이기','천궁 → 활혈행기, 기체혈어 해소','백작약 → 양혈유간, 간비 조화','지각·진피 → 행기소적'], application:'옆구리통, 복부팽만, 스트레스성통증' },
+      '혈부축어탕': { icon:'瘀', iconColor:'#8B5CF6', hanja:'血府逐瘀湯', ingredients:'도인·홍화·당귀·생지황·천궁·적작약·우슬·시호·지각·길경·감초', tags:[{text:'활혈축어',color:'#8B5CF6'},{text:'행기지통',color:'#DC2626'},{text:'어혈제거',color:'#F59E0B'}], mechanism:['도인·홍화 → 활혈축어, 어혈 파괴','당귀·생지황·천궁·적작약 → 양혈활혈','시호·지각 → 소간행기, 기혈 동시 조절','우슬 → 인혈하행, 길경 → 재약상행'], application:'고정통, 흉통, 두통, 월경통(어혈)' },
+      '계지복령환': { icon:'桂', iconColor:'#8B5CF6', hanja:'桂枝茯苓丸', ingredients:'계지·복령·목단피·도인·백작약', tags:[{text:'활혈화어',color:'#8B5CF6'},{text:'온경소징',color:'#DC2626'},{text:'부인과',color:'#EC4899'}], mechanism:['계지 → 온통혈맥, 한응어혈 해소','목단피 → 청열활혈, 어열 제거','도인 → 파어소징','백작약 → 양혈화영'], application:'생리통, 자궁근종, 난소낭종, 산후어혈' },
+      '이진탕': { icon:'痰', iconColor:'#A855F7', hanja:'二陳湯', ingredients:'반하·진피·복령·감초·생강', tags:[{text:'조습화담',color:'#A855F7'},{text:'이기화중',color:'#2563EB'},{text:'담음기본',color:'#059669'}], mechanism:['반하 → 조습화담, 강역지구','진피 → 이기화담, 비위 기능 촉진','복령 → 건비이습, 담 생성 근원 차단','생강 → 온중화담, 반하 독성 중화'], application:'담다해수, 구역, 두중감, 현훈' },
+      '반하백출천마탕': { icon:'天', iconColor:'#A855F7', hanja:'半夏白朮天麻湯', ingredients:'반하·백출·천마·진피·복령·감초·생강·대조', tags:[{text:'화담식풍',color:'#A855F7'},{text:'건비거습',color:'#2563EB'},{text:'어지럼증',color:'#DC2626'}], mechanism:['반하·천마 → 화담식풍, 현훈 제거','백출·복령 → 건비거습, 담원 차단','진피 → 이기화담','생강·대조 → 조화비위'], application:'담음성 어지럼증, 두중감, 메스꺼움' },
+      '평위산': { icon:'積', iconColor:'#F97316', hanja:'平胃散', ingredients:'창출·후박·진피·감초·생강·대조', tags:[{text:'조습운비',color:'#F97316'},{text:'행기화적',color:'#DC2626'},{text:'소화불량',color:'#2563EB'}], mechanism:['창출 → 조습건비, 비위 습탁 제거','후박 → 행기소장, 복부팽만 해소','진피 → 이기화담, 기체 해소','감초·생강·대조 → 조화비위'], application:'위완부팽만, 식욕부진, 구역, 태니설' },
+      '보화환': { icon:'和', iconColor:'#F97316', hanja:'保和丸', ingredients:'산사·신곡·내복자·반하·진피·복령·연교', tags:[{text:'소식화적',color:'#F97316'},{text:'화담행기',color:'#A855F7'},{text:'과식후',color:'#059669'}], mechanism:['산사 → 소육식, 육류 소화 촉진','신곡 → 소곡식, 곡류 적체 해소','내복자 → 하기소식, 면식 소화','연교 → 청열산결, 식적 화열 제거'], application:'과식후체함, 만성소화불량, 식적발열' },
+      '오적산': { icon:'寒', iconColor:'#64748B', hanja:'五積散', ingredients:'마황·창출·진피·후박·반하·당귀·천궁·백작약·건강·계피 등', tags:[{text:'발표온리',color:'#64748B'},{text:'순기거습',color:'#2563EB'},{text:'전신관절',color:'#DC2626'}], mechanism:['마황·계피 → 발한해표, 한사 제거','창출·후박 → 조습건비, 내습 제거','당귀·천궁·백작약 → 양혈활혈','건강 → 온중산한'], application:'한습성 관절통, 비오면 악화, 전신중통' },
+      '위령탕': { icon:'胃', iconColor:'#64748B', hanja:'胃苓湯', ingredients:'평위산+오령산 (창출·후박·진피+택사·저령·복령·백출·계지)', tags:[{text:'거습화중',color:'#64748B'},{text:'이수지사',color:'#2563EB'},{text:'위장한습',color:'#059669'}], mechanism:['평위산 → 조습운비, 위장 습탁 제거','오령산 → 이수삼습, 수습 배출','계지 → 온양화기, 기화 촉진','습탁과 수음 동시 제거'], application:'수양성설사, 복부냉통, 구역오심' },
+      '용담사간탕': { icon:'熱', iconColor:'#EF4444', hanja:'龍膽瀉肝湯', ingredients:'용담초·치자·황금·택사·목통·차전자·시호·생지황·당귀·감초', tags:[{text:'청간사화',color:'#EF4444'},{text:'이습청열',color:'#F59E0B'},{text:'하초습열',color:'#7C3AED'}], mechanism:['용담초 → 사간담실화','황금·치자 → 청열조습','택사·목통·차전자 → 이습강탁, 습열 배출','생지황·당귀 → 양혈보음, 고한 약성 완화'], application:'비뇨기감염, 대하, 습진, 간담습열' },
+      '인진호탕': { icon:'茵', iconColor:'#EF4444', hanja:'茵蔯蒿湯', ingredients:'인진호·치자·대황', tags:[{text:'청열이습',color:'#EF4444'},{text:'퇴황',color:'#F59E0B'},{text:'간담청열',color:'#2563EB'}], mechanism:['인진호 → 청리습열, 퇴황 주약','치자 → 청열이습, 삼초 습열 제거','대황 → 사열통변, 습열 대변 배출','세 약물 합력으로 습열 퇴황'], application:'황달, 간담습열, 구고, 소변황적' }
+    };
+
+    var productData = {
+      '기허': { products: ['쌍화탕', '십전대보탕'], prescriptions: ['보중익기탕', '사군자탕'] },
+      '혈허': { products: ['십전대보탕', '공진단'], prescriptions: ['사물탕', '당귀보혈탕'] },
+      '음허': { products: ['경옥고', '천왕보심단'], prescriptions: ['육미지황탕', '자음강화탕'] },
+      '양허': { products: ['공진단', '쌍화탕'], prescriptions: ['팔미지황탕', '진무탕'] },
+      '기울': { products: ['천왕보심단'], prescriptions: ['소요산', '시호소간산'] },
+      '어혈': { products: [], prescriptions: ['혈부축어탕', '계지복령환'] },
+      '담음': { products: [], prescriptions: ['이진탕', '반하백출천마탕'] },
+      '식적': { products: [], prescriptions: ['평위산', '보화환'] },
+      '한습': { products: ['쌍화탕', '십전대보탕'], prescriptions: ['오적산', '위령탕'] },
+      '습열': { products: [], prescriptions: ['용담사간탕', '인진호탕'] }
+    };
+
+    // ========================================
+    // GLOBAL STATE
+    // ========================================
+    var currentPage = 0;
+    var totalPages = 5;
+    var answers = {};
+
+    // ========================================
+    // EVENT LISTENERS
+    // ========================================
+    document.addEventListener('change', function(e) {
+      if (e.target.matches('input[type="radio"]')) {
+        var name = e.target.name;
+        document.querySelectorAll('input[name="' + name + '"]').forEach(function(r) {
+          r.closest('.option').classList.remove('selected');
+        });
+        e.target.closest('.option').classList.add('selected');
+      }
+      if (e.target.matches('input[type="checkbox"]')) {
+        var opt = e.target.closest('.option');
+        if (e.target.checked) {
+          opt.classList.add('selected');
+        } else {
+          opt.classList.remove('selected');
+        }
+        var card = e.target.closest('.question-card');
+        var isNone = e.target.dataset.pattern === '';
+        if (isNone && e.target.checked) {
+          card.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+            if (cb !== e.target) {
+              cb.checked = false;
+              cb.closest('.option').classList.remove('selected');
+            }
+          });
+        } else if (!isNone && e.target.checked) {
+          card.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+            if (cb.dataset.pattern === '') {
+              cb.checked = false;
+              cb.closest('.option').classList.remove('selected');
+            }
+          });
+        }
+      }
+    });
+
+    document.getElementById('prevBtn').addEventListener('click', prevPage);
+    document.getElementById('nextBtn').addEventListener('click', nextPage);
+    document.getElementById('footerPrevBtn').addEventListener('click', prevPage);
+    document.getElementById('footerNextBtn').addEventListener('click', nextPage);
+
+    // ========================================
+    // PAGINATION
+    // ========================================
+    function showPage(n) {
+      var pages = document.querySelectorAll('.page');
+      pages.forEach(function(p) { p.classList.remove('active'); });
+      if (n >= 0 && n < pages.length) {
+        pages[n].classList.add('active');
+        currentPage = n;
+      }
+      updateNav();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function nextPage() {
+      if (currentPage < totalPages - 1) {
+        showPage(currentPage + 1);
+      } else if (currentPage === totalPages - 1) {
+        var allAnswered = checkAllAnswered();
+        if (allAnswered) {
+          showResults();
+        }
+      }
+    }
+
+    function prevPage() {
+      if (currentPage > 0) {
+        showPage(currentPage - 1);
+      }
+    }
+
+    function updateNav() {
+      document.getElementById('currentPage').textContent = currentPage + 1;
+      document.getElementById('prevBtn').disabled = currentPage === 0;
+      document.getElementById('footerPrevBtn').disabled = currentPage === 0;
+
+      var isLastPage = currentPage === totalPages - 1;
+      document.getElementById('nextBtn').textContent = isLastPage ? '결과 보기' : '다음';
+      document.getElementById('footerNextBtn').textContent = isLastPage ? '결과 보기' : '다음';
+
+      var progress = ((currentPage + 1) / totalPages) * 100;
+      document.querySelector('.progress-fill').style.width = progress + '%';
+    }
+
+    function checkAllAnswered() {
+      for (var i = 1; i <= 25; i++) {
+        var name = 'q' + i;
+        var checked = document.querySelector('input[name="' + name + '"]:checked');
+        if (!checked) {
+          alert('모든 문항에 답변해주세요.');
+          return false;
+        }
+      }
+      return true;
+    }
+
+    // ========================================
+    // SCORING & RESULTS
+    // ========================================
+    function calculateScores() {
+      var scores = {};
+      for (var p in patterns) {
+        scores[p] = 0;
+      }
+      scores['woohwang'] = 0;
+      scores['brain'] = 0;
+
+      for (var i = 1; i <= 25; i++) {
+        var name = 'q' + i;
+        var inputs = document.querySelectorAll('input[name="' + name + '"]:checked');
+        inputs.forEach(function(input) {
+          var patternStr = input.dataset.pattern;
+          if (patternStr) {
+            var items = patternStr.split(',');
+            items.forEach(function(item) {
+              var parts = item.split(':');
+              var pat = parts[0];
+              var val = parseInt(parts[1]) || 1;
+              if (scores.hasOwnProperty(pat)) {
+                scores[pat] += val;
+              }
+            });
+          }
+        });
+      }
+      return scores;
+    }
+
+    function getSeverity(score) {
+      if (score >= 10) return 'high';
+      if (score >= 5) return 'med';
+      return 'low';
+    }
+
+    function showResults() {
+      var scores = calculateScores();
+      var sorted = Object.keys(patterns)
+        .sort(function(a, b) { return scores[b] - scores[a]; });
+      var top1 = sorted[0];
+      var top2 = sorted[1];
+      var top3 = sorted[2];
+
+      var result = document.querySelector('.result-page');
+      result.classList.add('active');
+      document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+      document.querySelector('nav').style.display = 'none';
+      document.querySelector('footer').style.display = 'none';
+
+      renderHero(top1, top2, scores);
+      renderRadarChart(scores);
+      renderScoreCards(sorted, scores);
+      renderCheckpoints(scores);
+      renderPatternDescription(top1);
+      renderFood(top1, scores, sorted);
+      renderLifestyle(top1, scores, sorted);
+      renderProducts(top1, top2, top3, scores);
+      renderPrescription(top1, top2, top3, scores);
+    }
+
+    function renderHero(top1, top2, scores) {
+      var p = patterns[top1];
+      document.getElementById('resultName').textContent = top1;
+      document.getElementById('resultHanja').textContent = p.hanja;
+
+      var desc = p.desc;
+      if (scores[top1] >= 10 && scores[top2] >= 5) {
+        var combo = getComboDesc(top1, top2);
+        if (combo) desc += '\n\n' + combo;
+      }
+      document.getElementById('resultDesc').textContent = desc;
+    }
+
+    function getComboDesc(p1, p2) {
+      var combos = {
+        '기허+담음': '기력 부족으로 수분 대사가 안 되는 상태. 소화와 체중관리가 핵심',
+        '기허+양허': '에너지 부족에 냉증까지 겹침. 따뜻한 보양식이 중요',
+        '음허+기울': '스트레스로 진액이 소모된 상태. 수면과 마음 안정이 급선무',
+        '혈허+기울': '감정 스트레스가 혈을 소모. 정서 안정과 영양 보충 필요',
+        '기울+어혈': '스트레스가 혈액순환까지 방해. 운동과 스트레스 해소가 핵심',
+        '담음+식적': '소화 기능 전반에 문제. 식습관 개선이 최우선',
+        '양허+한습': '냉증과 부종이 함께. 몸을 따뜻하게 하는 것이 치료의 시작',
+        '기허+혈허': '기혈이 모두 부족. 충분한 영양과 휴식이 필수'
+      };
+      return combos[p1 + '+' + p2] || null;
+    }
+
+    function renderRadarChart(scores) {
+      var canvas = document.getElementById('radarChart');
+      if (!canvas || typeof Chart === 'undefined') return;
+      var labels = [];
+      var data = [];
+      var bgColors = [];
+      var borderColors = [];
+      for (var p in patterns) {
+        if (p === 'woohwang' || p === 'brain') continue;
+        labels.push(p);
+        data.push(scores[p] || 0);
+        bgColors.push(patterns[p].color + '33');
+        borderColors.push(patterns[p].color);
+      }
+      new Chart(canvas, {
+        type: 'radar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: '체질 점수',
+            data: data,
+            backgroundColor: 'rgba(27, 54, 93, 0.15)',
+            borderColor: '#1B365D',
+            borderWidth: 2,
+            pointBackgroundColor: borderColors,
+            pointBorderColor: '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 5,
+            pointHoverRadius: 7
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: true,
+          plugins: {
+            tooltip: { enabled: true, padding: 10 },
+            legend: { display: false }
+          },
+          scales: {
+            r: {
+              beginAtZero: true,
+              ticks: { font: { size: 11 }, backdropColor: 'transparent' },
+              pointLabels: { font: { size: 13, family: 'Noto Sans KR', weight: '500' } },
+              grid: { color: 'rgba(0,0,0,0.08)' },
+              angleLines: { color: 'rgba(0,0,0,0.06)' }
+            }
+          }
+        }
+      });
+    }
+
+    function renderScoreCards(sorted, scores) {
+      var html = '';
+      for (var i = 0; i < 5 && i < sorted.length; i++) {
+        var pat = sorted[i];
+        if (pat === 'woohwang' || pat === 'brain') continue;
+        var score = scores[pat];
+        var p = patterns[pat];
+        var barWidth = Math.min(score, 30);
+        html += '<div class="score-card" style="border-left: 4px solid ' + p.color + '">' +
+          '<div class="score-icon" style="background: ' + p.color + '">' + p.hanja + '</div>' +
+          '<div class="score-content">' +
+          '<div class="score-name">' + pat + '</div>' +
+          '<div class="score-desc">' + p.desc + '</div>' +
+          '<div class="score-bar"><div class="score-bar-fill" style="background: ' + p.color + '; width: ' + (barWidth / 30 * 100) + '%"></div></div>' +
+          '<div class="score-number">점수: ' + score + '</div>' +
+          '</div></div>';
+      }
+      document.getElementById('scoreCards').innerHTML = html;
+    }
+
+    function renderCheckpoints(scores) {
+      var maxScore = 20;
+      var items = [
+        { label: '수면', score: scores['기울'] + scores['음허'], color: '#818CF8', bgColor: '#EDE9FE',
+          icon: '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>' },
+        { label: '대소변', score: scores['담음'] + scores['양허'], color: '#6EE7B7', bgColor: '#D1FAE5',
+          icon: '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' },
+        { label: '소화', score: scores['식적'] + scores['담음'], color: '#FCD34D', bgColor: '#FEF3C7',
+          icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' },
+        { label: '체온', score: scores['양허'] + scores['음허'], color: '#FDA4AF', bgColor: '#FFE4E6',
+          icon: '<svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>' },
+        { label: '기분', score: scores['기울'] + scores['혈허'], color: '#F9A8D4', bgColor: '#FCE7F3',
+          icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>' }
+      ];
+
+      var html = '';
+      items.forEach(function(item) {
+        // INVERTED: 100% = 건강(점수 낮음), 0% = 관리필요(점수 높음)
+        var badPct = Math.min(Math.round(item.score / maxScore * 100), 100);
+        var goodPct = Math.max(100 - badPct, 0);
+        var status, statusText, barColor;
+        if (item.score >= 10) { status = 'need'; statusText = '관리필요'; barColor = '#EF4444'; }
+        else if (item.score >= 5) { status = 'normal'; statusText = '보통'; barColor = '#F59E0B'; }
+        else { status = 'good'; statusText = '양호'; barColor = '#10B981'; }
+
+        html += '<div class="ckpt-row">';
+        html += '<div class="ckpt-icon" style="background:' + item.bgColor + ';color:' + item.color + ';">' + item.icon + '</div>';
+        html += '<div class="ckpt-bar-wrap">';
+        html += '<div class="ckpt-label">' + item.label + '</div>';
+        html += '<div class="ckpt-bar"><div class="ckpt-fill" style="width:' + goodPct + '%;background:' + barColor + ';"></div></div>';
+        html += '</div>';
+        html += '<div class="ckpt-pct">' + goodPct + '%</div>';
+        html += '<div class="ckpt-badge ' + status + '">' + statusText + '</div>';
+        html += '</div>';
+      });
+      document.getElementById('checkpointsContent').innerHTML = html;
+    }
+
+    function renderPatternDescription(pat) {
+      var p = patterns[pat];
+      var full = {
+        '기허': '기허는 몸의 에너지가 부족한 상태입니다. 항상 피곤하고 쉬어도 회복이 안 되며, 소화 기능도 약합니다. 아침에 일어나기 힘들고 오후가 되면 더 피로해지는 특징이 있습니다. 면역력도 약해서 자주 감기에 걸리며, 추위를 많이 탑니다.',
+        '혈허': '혈허는 혈액이 부족하여 신체 곳곳에 영양 공급이 잘 안 되는 상태입니다. 얼굴이 창백하고 다크서클이 심하며, 머리카락이 잘 빠지고 손톱이 약합니다. 생리 주기가 불규칙하고 생리량이 적으며, 손발이 저리거나 쉽게 피곤합니다.',
+        '음허': '음허는 체내 진액과 수분이 부족하여 열감과 건조증을 느끼는 상태입니다. 입과 피부가 건조하고, 오후와 저녁에 얼굴이 화끈거리며 손발바닥이 뜨거워집니다. 밤에 자면서 식은땀이 나고 입이 자주 마르며, 변비 경향이 있습니다.',
+        '양허': '양허는 몸을 따뜻하게 하는 에너지 기능이 약한 상태입니다. 손발이 항상 차고 추위를 많이 타며, 아침에 일어나기 힘들고 소화가 안 됩니다. 밤중에 자주 화장실에 가고 부종이 생기기 쉽습니다. 찬 음식을 피하고 몸을 따뜻하게 유지하는 것이 중요합니다.',
+        '기울': '기울은 스트레스와 정서적 긴장으로 기(에너지)의 흐름이 막혀 있는 상태입니다. 가슴과 옆구리가 답답하고 한숨이 자주 나오며, 불안과 초조감을 느낍니다. 스트레스를 받으면 소화가 안 되고 가슴이 두근거리며, 여기저기 돌아다니는 통증이 생깁니다.',
+        '어혈': '어혈은 혈액순환이 원활하지 않아 혈액이 정체되는 상태입니다. 한 곳이 찌르듯이 아프고 멍이 잘 들며, 피부가 칙칙하고 주근깨나 기미가 많습니다. 생리통이 심하고 핏덩어리가 나오며, 혈액순환을 개선하는 것이 중요합니다.',
+        '담음': '담음은 수분 대사가 제대로 되지 않아 불필요한 수분과 노폐물이 축적된 상태입니다. 몸이 무겁고 부종이 잘 생기며, 아침에 얼굴이 붓는 특징이 있습니다. 소화가 안 되고 가슴이 답답하며, 습한 날씨에 증상이 악화됩니다.',
+        '식적': '식적은 소화 기능이 저하되어 음식물이 적체되는 상태입니다. 먹으면 항상 더부룩하고 가스가 차며, 잘 체하는 특징이 있습니다. 입 냄새가 심하고 아침에 혀에 백태가 끼어 있으며, 과식과 야식을 피하는 것이 치료의 핵심입니다.',
+        '한습': '한습은 찬 기운과 습기가 결합하여 몸에 축적된 상태입니다. 비오는 날씨에 관절이 쑤시고 몸이 무거워지며, 소화가 안 되고 머리가 무겁습니다. 손발이 차고 부종이 생기기 쉬우며, 몸을 따뜻하게 유지하고 습한 환경을 피하는 것이 중요합니다.',
+        '습열': '습열은 습기와 열이 결합하여 몸에 염증을 유발하는 상태입니다. 여드름이나 뾰루지가 자주 나고 가렵거나 두드러기가 잘 생깁니다. 소변이 진하고 냄새가 강하며, 무겁고 불편한 느낌이 있습니다. 기름진 음식과 술을 피하고 청열음식을 섭취하는 것이 좋습니다.'
+      };
+      document.getElementById('patternDescription').textContent = full[pat] || '-';
+    }
+
+    function renderFood(pat, scores, sorted) {
+      var food = foodData[pat];
+      var html = '<div class="food-section">' +
+        '<div class="food-title">⚠️ 꼭 피하세요</div>' +
+        '<div class="food-critical">' + food.critical + '</div>' +
+        '<div class="food-title" style="margin-top: 12px;">✅ 추천 음식</div>' +
+        '<div class="food-list">';
+      food.good.split(', ').forEach(function(item) {
+        html += '<div class="food-item"><div class="food-item-icon">◆</div><div>' + item + '</div></div>';
+      });
+      html += '</div><div class="food-title" style="margin-top: 12px;">🚫 피해야 할 음식</div>' +
+        '<div class="food-list">';
+      food.avoid.split(', ').forEach(function(item) {
+        html += '<div class="food-item"><div class="food-item-icon">✕</div><div>' + item + '</div></div>';
+      });
+      html += '</div><div class="food-title" style="margin-top: 12px;">🍵 추천 차</div>' +
+        '<div class="food-tea">' + food.tea + '</div></div>';
+      document.getElementById('foodSection').innerHTML = html;
+    }
+
+    function renderLifestyle(pat, scores, sorted) {
+      var lifestyle = lifestyleData[pat];
+      var html = '';
+      lifestyle.slice(0, 3).forEach(function(item, idx) {
+        var priority = ['🌟1순위', '2순위', '3순위'][idx];
+        html += '<div class="lifestyle-item"><span class="lifestyle-priority">' + priority + '</span>' + item + '</div>';
+      });
+      html += '<button class="more-toggle" onclick="toggleMore(this)">더보기 ▼</button>' +
+        '<div class="more-content">';
+      lifestyle.slice(3).forEach(function(item) {
+        html += '<div class="lifestyle-item">' + item + '</div>';
+      });
+      html += '</div>';
+      document.getElementById('lifestyleSection').innerHTML = html;
+    }
+
+    function toggleMore(btn) {
+      var content = btn.nextElementSibling;
+      content.classList.toggle('active');
+      btn.textContent = content.classList.contains('active') ? '접기 ▲' : '더보기 ▼';
+    }
+
+    function renderProductCard(productName, severity) {
+      var p = productCatalog[productName];
+      if (!p) return '';
+      var period = severity === 'high' ? p.highPeriod : (severity === 'med' ? p.medPeriod : p.minPeriod);
+      var h = '<div class="rx-card">';
+      h += '<div class="rx-header">';
+      h += '<div class="rx-icon" style="background:' + p.iconColor + ';">' + p.icon + '</div>';
+      h += '<div><div class="rx-title">' + productName + ' <span class="rx-hanja">(' + p.hanja + ')</span></div>';
+      h += '<div class="rx-ingredients">' + p.ingredients + '</div></div></div>';
+      h += '<div class="rx-tags">';
+      p.tags.forEach(function(t) { h += '<span class="rx-tag" style="background:' + t.color + ';">' + t.text + '</span>'; });
+      h += '</div>';
+      h += '<div class="rx-mechanism"><div class="rx-mechanism-title">치료 기전</div><ol>';
+      p.mechanism.forEach(function(m) { h += '<li>' + m + '</li>'; });
+      h += '</ol></div>';
+      h += '<div class="rx-dosage-box">추천 복용: ' + p.dosage + '</div>';
+      h += '<div class="rx-period-box">📅 권장 복용 기간: <strong>' + period + '</strong></div>';
+      h += '</div>';
+      return h;
+    }
+
+    function renderProducts(pat1, pat2, pat3, scores) {
+      var severity = getSeverity(scores[pat1]);
+      var severityLabel = severity === 'high' ? '집중 관리 필요' : (severity === 'med' ? '적극 관리 권장' : '경증 관리');
+      var severityColor = severity === 'high' ? '#EF4444' : (severity === 'med' ? '#F59E0B' : '#10B981');
+      var html = '';
+
+      // Severity indicator
+      html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;padding:14px 16px;background:' + severityColor + '15;border-left:4px solid ' + severityColor + ';border-radius:8px;">';
+      html += '<span style="font-weight:700;color:' + severityColor + ';font-size:15px;">' + severityLabel + '</span>';
+      html += '</div>';
+
+      var prod = productData[pat1];
+      if (prod && prod.products.length > 0) {
+        // Category label
+        html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">보기(補氣)·보음(補陰) 처방</div>';
+        // Render rich product cards
+        prod.products.forEach(function(pName, idx) {
+          html += renderProductCard(pName, severity);
+        });
+        // Prescription backup - use prescriptions array
+        var rxNames = prod.prescriptions.map(function(n) {
+          var rx = prescriptionCatalog[n];
+          return rx ? n + '(' + rx.hanja + ')' : n;
+        }).join(', ');
+        html += '<div style="padding:14px 16px;background:rgba(27,54,93,0.06);border-radius:8px;margin-top:8px;font-size:13px;line-height:1.7;">';
+        html += '📋 첩약 병행 시: <strong>' + rxNames + '</strong><br>';
+        html += '<span style="color:#6b7280;">첩약 기본 2개월 복용을 권장합니다.</span>';
+        html += '</div>';
+      } else {
+        // Consultation only
+        html += '<div class="rx-consult-card">';
+        html += '<div class="rx-consult-title">🏥 맞춤 처방 상담 권장</div>';
+        html += '<div style="font-size:13px;color:#6b7280;margin-bottom:12px;">현재 ' + pat1 + ' 경향이 높아<br>단순 제품보다 맞춤 처방 상담이 더 적합합니다.</div>';
+        var consultRxNames = prod.prescriptions.map(function(n) {
+          var rx = prescriptionCatalog[n];
+          return rx ? n + '(' + rx.hanja + ')' : n;
+        }).join(', ');
+        html += '<div class="rx-consult-rx">대표 처방: ' + consultRxNames + '</div>';
+        html += '<div style="font-size:13px;color:#6b7280;margin-top:8px;">첩약 기본 <strong>2개월</strong> 복용을 권장합니다.</div>';
+        html += '</div>';
+      }
+
+      if (scores[pat1] >= 10) {
+        html += '<div style="padding:14px 16px;background:#FEE2E2;border-left:4px solid #EF4444;border-radius:8px;font-size:14px;color:#991B1B;margin-top:12px;font-weight:600;">⚠️ 점수가 높습니다. 첩약 병행을 적극 권장합니다.</div>';
+      }
+
+      // Special cards (if triggered)
+      if (scores['woohwang'] >= 3) {
+        html += '<div style="margin-top:16px;font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">상황별 추천</div>';
+        html += renderProductCard('우황청심원', severity);
+      }
+      if (scores['brain'] >= 3) {
+        if (scores['woohwang'] < 3) html += '<div style="margin-top:16px;font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;">상황별 추천</div>';
+        html += renderProductCard('총명공진단', severity);
+      }
+
+      document.getElementById('productSection').innerHTML = html;
+    }
+
+    function renderRxCard(rxName) {
+      var rx = prescriptionCatalog[rxName];
+      if (!rx) return '<div style="padding:8px;font-size:13px;">' + rxName + '</div>';
+      var h = '<div class="rx-card">';
+      h += '<div class="rx-header">';
+      h += '<div class="rx-icon" style="background:' + rx.iconColor + ';">' + rx.icon + '</div>';
+      h += '<div><div class="rx-title">' + rxName + ' <span class="rx-hanja">(' + rx.hanja + ')</span></div>';
+      h += '<div class="rx-ingredients">' + rx.ingredients + '</div></div></div>';
+      h += '<div class="rx-tags">';
+      rx.tags.forEach(function(t) { h += '<span class="rx-tag" style="background:' + t.color + ';">' + t.text + '</span>'; });
+      h += '</div>';
+      h += '<div class="rx-mechanism"><div class="rx-mechanism-title">치료 기전</div><ol>';
+      rx.mechanism.forEach(function(m) { h += '<li>' + m + '</li>'; });
+      h += '</ol></div>';
+      h += '<div style="font-size:12px;color:#6b7280;padding:8px 0;border-top:1px solid #e5e7eb;">적용: ' + rx.application + '</div>';
+      h += '</div>';
+      return h;
+    }
+
+    function renderPrescription(pat1, pat2, pat3, scores) {
+      var html = '';
+      var prod = productData[pat1];
+      if (!prod) return;
+
+      // 1순위 변증 처방
+      html += '<div style="font-size:13px;font-weight:600;color:#6b7280;margin-bottom:8px;">' + pat1 + ' 대표 첩약 처방</div>';
+      prod.prescriptions.forEach(function(rxName) {
+        html += renderRxCard(rxName);
+      });
+
+      // 2순위 변증 처방 (점수 5 이상이면)
+      if (scores[pat2] >= 5 && productData[pat2]) {
+        html += '<div style="font-size:13px;font-weight:600;color:#6b7280;margin:16px 0 8px;">' + pat2 + ' 관련 처방</div>';
+        productData[pat2].prescriptions.forEach(function(rxName) {
+          // 중복 방지
+          if (prod.prescriptions.indexOf(rxName) === -1) {
+            html += renderRxCard(rxName);
+          }
+        });
+      }
+
+      html += '<div style="padding:14px 16px;background:rgba(27,54,93,0.06);border-radius:8px;margin-top:12px;font-size:13px;line-height:1.7;text-align:center;">';
+      html += '첩약 기본 <strong>2개월</strong> 복용을 권장합니다.<br>';
+      html += '<a href="tel:032-721-8575" style="color:#1B365D;font-weight:700;font-size:15px;text-decoration:none;">☎ 032-721-8575</a><br>';
+      html += '<span style="font-size:12px;color:#6b7280;">365송도경희한의원에서 정확한 진단과 처방을 받아보세요</span>';
+      html += '</div>';
+
+      document.getElementById('prescriptionList').innerHTML = html;
+    }
+
+    // ========================================
+    // UTILITY FUNCTIONS
+    // ========================================
+    function printResult() {
+      window.print();
+    }
+
+    function shareResult() {
+      var text = '365송도경희한의원 체질 변증 설문 결과를 확인해보세요!\n\n☎ 032-721-8575';
+      if (navigator.share) {
+        navigator.share({ title: '체질 변증 설문', text: text });
+      } else {
+        shareKakao();
+      }
+    }
+
+    function shareKakao() {
+      var topName = document.getElementById('resultName') ? document.getElementById('resultName').textContent : '';
+      var text = '365송도경희한의원 체질 변증 설문 결과\n\n나의 체질: ' + topName + '\n\n체질에 맞는 건강 관리법을 확인해보세요!\n☎ 032-721-8575';
+
+      // 방법1: navigator.clipboard (HTTPS에서만 동작)
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(function() {
+          showToast('✅ 결과가 복사되었습니다! 카카오톡에 붙여넣기 해주세요.');
+        }).catch(function() {
+          fallbackCopy(text);
+        });
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      // 방법2: execCommand fallback (로컬 파일에서도 동작)
+      var ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.cssText = 'position:fixed;left:-9999px;';
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      try {
+        var ok = document.execCommand('copy');
+        if (ok) {
+          showToast('✅ 결과가 복사되었습니다! 카카오톡에 붙여넣기 해주세요.');
+        } else {
+          showToast('복사에 실패했습니다. 직접 텍스트를 선택해 복사해 주세요.');
+        }
+      } catch(e) {
+        showToast('복사에 실패했습니다. 직접 텍스트를 선택해 복사해 주세요.');
+      }
+      document.body.removeChild(ta);
+    }
+
+    function callClinic() {
+      // 모바일: 전화 연결 / PC: 번호 표시
+      var isMobile = /iPhone|iPad|Android|Mobile/i.test(navigator.userAgent);
+      if (isMobile) {
+        window.location.href = 'tel:032-721-8575';
+      } else {
+        showToast('📞 032-721-8575 로 전화해 주세요');
+      }
+    }
+
+    function showToast(msg) {
+      var existing = document.querySelector('.toast-msg');
+      if (existing) existing.remove();
+      var toast = document.createElement('div');
+      toast.className = 'toast-msg';
+      toast.textContent = msg;
+      toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1B365D;color:white;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:600;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,0.2);';
+      document.body.appendChild(toast);
+      setTimeout(function() { toast.remove(); }, 3000);
+    }
+
+    function restartTest() {
+      window.location.reload();
+    }
+
+    // Initialize
+    showPage(0);
+  </script>
+</body>
+</html>
