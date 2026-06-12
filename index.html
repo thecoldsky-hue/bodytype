@@ -269,6 +269,7 @@
       text-align: center;
     }
 
+    .result-hero-img { width: 200px; max-width: 60%; border-radius: 14px; margin: 0 auto 16px; display: block; box-shadow: 0 6px 20px rgba(0,0,0,0.18); }
     .result-hero-name {
       font-size: 32px;
       font-weight: 700;
@@ -1522,6 +1523,7 @@
       <!-- RESULT PAGE -->
       <div class="result-page">
         <div class="result-hero">
+          <img id="resultImg" class="result-hero-img" alt="" style="display:none">
           <div class="result-hero-name" id="resultName">-</div>
           <div class="result-hero-hanja" id="resultHanja">-</div>
           <div class="result-hero-desc" id="resultDesc">-</div>
@@ -1601,6 +1603,8 @@
       '한습': { hanja: '寒', color: '#64748B', desc: '찬 기운과 습기가 몸에 축적된 상태' },
       '습열': { hanja: '熱', color: '#EF4444', desc: '습기와 열이 결합하여 염증이 생기는 상태' }
     };
+
+    var patternImages = { '기허': 'images/giheo.jpg', '혈허': 'images/hyeolheo.jpg', '음허': 'images/eumheo.jpg', '양허': 'images/yangheo.jpg', '기울': 'images/giul.jpg', '어혈': 'images/eohyeol.jpg', '담음': 'images/dameum.jpg', '식적': 'images/sikjeok.jpg', '한습': 'images/hanseup.jpg', '습열': 'images/seupyeol.jpg' };
 
     var foodData = {
       '기허': {
@@ -2019,16 +2023,46 @@
       return scores;
     }
 
-    function getSeverity(score) {
-      if (score >= 10) return 'high';
-      if (score >= 5) return 'med';
+    function computeMaxScores() {
+      var max = {};
+      for (var p in patterns) max[p] = 0;
+      for (var i = 1; i <= 25; i++) {
+        var inputs = document.querySelectorAll('input[name="q' + i + '"]');
+        if (!inputs.length) continue;
+        var isCheckbox = inputs[0].type === 'checkbox';
+        var qmax = {};
+        inputs.forEach(function(input) {
+          var ps = input.dataset.pattern;
+          if (!ps) return;
+          ps.split(',').forEach(function(item) {
+            var parts = item.split(':');
+            var pat = parts[0], val = parseInt(parts[1]) || 1;
+            if (!(pat in max)) return;
+            if (isCheckbox) { qmax[pat] = (qmax[pat] || 0) + val; }
+            else { qmax[pat] = Math.max(qmax[pat] || 0, val); }
+          });
+        });
+        for (var pat in qmax) max[pat] += qmax[pat];
+      }
+      return max;
+    }
+
+    function getSeverity(pctValue) {
+      if (pctValue >= 50) return 'high';
+      if (pctValue >= 25) return 'med';
       return 'low';
     }
 
     function showResults() {
       var scores = calculateScores();
+      var maxScores = computeMaxScores();
+      var pct = {};
+      for (var p in patterns) {
+        pct[p] = maxScores[p] > 0 ? Math.round(scores[p] / maxScores[p] * 100) : 0;
+      }
+      window.__pct = pct;
       var sorted = Object.keys(patterns)
-        .sort(function(a, b) { return scores[b] - scores[a]; });
+        .sort(function(a, b) { return (pct[b] - pct[a]) || (scores[b] - scores[a]); });
       var top1 = sorted[0];
       var top2 = sorted[1];
       var top3 = sorted[2];
@@ -2055,8 +2089,11 @@
       document.getElementById('resultName').textContent = top1;
       document.getElementById('resultHanja').textContent = p.hanja;
 
+      var img = document.getElementById('resultImg');
+      if (img && patternImages[top1]) { img.src = patternImages[top1]; img.style.display = 'block'; }
+
       var desc = p.desc;
-      if (scores[top1] >= 10 && scores[top2] >= 5) {
+      if (window.__pct[top1] >= 50 && window.__pct[top2] >= 25) {
         var combo = getComboDesc(top1, top2);
         if (combo) desc += '\n\n' + combo;
       }
@@ -2074,7 +2111,7 @@
         '양허+한습': '냉증과 부종이 함께. 몸을 따뜻하게 하는 것이 치료의 시작',
         '기허+혈허': '기혈이 모두 부족. 충분한 영양과 휴식이 필수'
       };
-      return combos[p1 + '+' + p2] || null;
+      return combos[p1 + '+' + p2] || combos[p2 + '+' + p1] || null;
     }
 
     function renderRadarChart(scores) {
@@ -2087,7 +2124,7 @@
       for (var p in patterns) {
         if (p === 'woohwang' || p === 'brain') continue;
         labels.push(p);
-        data.push(scores[p] || 0);
+        data.push((window.__pct && window.__pct[p]) || 0);
         bgColors.push(patterns[p].color + '33');
         borderColors.push(patterns[p].color);
       }
@@ -2118,6 +2155,7 @@
           scales: {
             r: {
               beginAtZero: true,
+              max: 100,
               ticks: { font: { size: 11 }, backdropColor: 'transparent' },
               pointLabels: { font: { size: 13, family: 'Noto Sans KR', weight: '500' } },
               grid: { color: 'rgba(0,0,0,0.08)' },
@@ -2135,14 +2173,14 @@
         if (pat === 'woohwang' || pat === 'brain') continue;
         var score = scores[pat];
         var p = patterns[pat];
-        var barWidth = Math.min(score, 30);
+        var w = (window.__pct && window.__pct[pat]) || 0;
         html += '<div class="score-card" style="border-left: 4px solid ' + p.color + '">' +
           '<div class="score-icon" style="background: ' + p.color + '">' + p.hanja + '</div>' +
           '<div class="score-content">' +
           '<div class="score-name">' + pat + '</div>' +
           '<div class="score-desc">' + p.desc + '</div>' +
-          '<div class="score-bar"><div class="score-bar-fill" style="background: ' + p.color + '; width: ' + (barWidth / 30 * 100) + '%"></div></div>' +
-          '<div class="score-number">점수: ' + score + '</div>' +
+          '<div class="score-bar"><div class="score-bar-fill" style="background: ' + p.color + '; width: ' + w + '%"></div></div>' +
+          '<div class="score-number">점수: ' + score + ' (' + w + '%)</div>' +
           '</div></div>';
       }
       document.getElementById('scoreCards').innerHTML = html;
@@ -2151,26 +2189,26 @@
     function renderCheckpoints(scores) {
       var maxScore = 20;
       var items = [
-        { label: '수면', score: scores['기울'] + scores['음허'], color: '#818CF8', bgColor: '#EDE9FE',
+        { label: '수면', rawScore: scores['기울'] + scores['음허'], color: '#818CF8', bgColor: '#EDE9FE',
           icon: '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>' },
-        { label: '대소변', score: scores['담음'] + scores['양허'], color: '#6EE7B7', bgColor: '#D1FAE5',
+        { label: '대소변', rawScore: scores['담음'] + scores['양허'], color: '#6EE7B7', bgColor: '#D1FAE5',
           icon: '<svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' },
-        { label: '소화', score: scores['식적'] + scores['담음'], color: '#FCD34D', bgColor: '#FEF3C7',
+        { label: '소화', rawScore: scores['식적'] + scores['담음'], color: '#FCD34D', bgColor: '#FEF3C7',
           icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>' },
-        { label: '체온', score: scores['양허'] + scores['음허'], color: '#FDA4AF', bgColor: '#FFE4E6',
+        { label: '체온', rawScore: scores['양허'] + scores['음허'], color: '#FDA4AF', bgColor: '#FFE4E6',
           icon: '<svg viewBox="0 0 24 24"><path d="M14 14.76V3.5a2.5 2.5 0 00-5 0v11.26a4.5 4.5 0 105 0z"/></svg>' },
-        { label: '기분', score: scores['기울'] + scores['혈허'], color: '#F9A8D4', bgColor: '#FCE7F3',
+        { label: '기분', rawScore: scores['기울'] + scores['혈허'], color: '#F9A8D4', bgColor: '#FCE7F3',
           icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>' }
       ];
 
       var html = '';
       items.forEach(function(item) {
-        // INVERTED: 100% = 건강(점수 낮음), 0% = 관리필요(점수 높음)
-        var badPct = Math.min(Math.round(item.score / maxScore * 100), 100);
+        // INVERTED: 100% = 완벽(점수 낮음), 0% = 관리필요(점수 높음)
+        var badPct = Math.min(Math.round(item.rawScore / maxScore * 100), 100);
         var goodPct = Math.max(100 - badPct, 0);
         var status, statusText, barColor;
-        if (item.score >= 10) { status = 'need'; statusText = '관리필요'; barColor = '#EF4444'; }
-        else if (item.score >= 5) { status = 'normal'; statusText = '보통'; barColor = '#F59E0B'; }
+        if (item.rawScore >= 10) { status = 'need'; statusText = '관리필요'; barColor = '#EF4444'; }
+        else if (item.rawScore >= 5) { status = 'normal'; statusText = '보통'; barColor = '#F59E0B'; }
         else { status = 'good'; statusText = '양호'; barColor = '#10B981'; }
 
         html += '<div class="ckpt-row">';
@@ -2257,7 +2295,7 @@
       h += '<div class="rx-tags">';
       p.tags.forEach(function(t) { h += '<span class="rx-tag" style="background:' + t.color + ';">' + t.text + '</span>'; });
       h += '</div>';
-      h += '<div class="rx-mechanism"><div class="rx-mechanism-title">치료 기전</div><ol>';
+      h += '<div class="rx-mechanism"><div class="rx-mechanism-title">작용 원리</div><ol>';
       p.mechanism.forEach(function(m) { h += '<li>' + m + '</li>'; });
       h += '</ol></div>';
       h += '<div class="rx-dosage-box">추천 복용: ' + p.dosage + '</div>';
@@ -2267,7 +2305,7 @@
     }
 
     function renderProducts(pat1, pat2, pat3, scores) {
-      var severity = getSeverity(scores[pat1]);
+      var severity = getSeverity(window.__pct[pat1]);
       var severityLabel = severity === 'high' ? '집중 관리 필요' : (severity === 'med' ? '적극 관리 권장' : '경증 관리');
       var severityColor = severity === 'high' ? '#EF4444' : (severity === 'med' ? '#F59E0B' : '#10B981');
       var html = '';
@@ -2280,7 +2318,7 @@
       var prod = productData[pat1];
       if (prod && prod.products.length > 0) {
         // Category label
-        html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">보기(補氣)·보음(補陰) 처방</div>';
+        html += '<div style="font-size:12px;font-weight:600;color:#6b7280;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.05em;">' + pat1 + ' 맞춤 구성</div>';
         // Render rich product cards
         prod.products.forEach(function(pName, idx) {
           html += renderProductCard(pName, severity);
@@ -2308,7 +2346,7 @@
         html += '</div>';
       }
 
-      if (scores[pat1] >= 10) {
+      if (window.__pct[pat1] >= 50) {
         html += '<div style="padding:14px 16px;background:#FEE2E2;border-left:4px solid #EF4444;border-radius:8px;font-size:14px;color:#991B1B;margin-top:12px;font-weight:600;">⚠️ 점수가 높습니다. 첩약 병행을 적극 권장합니다.</div>';
       }
 
@@ -2336,7 +2374,7 @@
       h += '<div class="rx-tags">';
       rx.tags.forEach(function(t) { h += '<span class="rx-tag" style="background:' + t.color + ';">' + t.text + '</span>'; });
       h += '</div>';
-      h += '<div class="rx-mechanism"><div class="rx-mechanism-title">치료 기전</div><ol>';
+      h += '<div class="rx-mechanism"><div class="rx-mechanism-title">작용 원리</div><ol>';
       rx.mechanism.forEach(function(m) { h += '<li>' + m + '</li>'; });
       h += '</ol></div>';
       h += '<div style="font-size:12px;color:#6b7280;padding:8px 0;border-top:1px solid #e5e7eb;">적용: ' + rx.application + '</div>';
@@ -2356,7 +2394,7 @@
       });
 
       // 2순위 변증 처방 (점수 5 이상이면)
-      if (scores[pat2] >= 5 && productData[pat2]) {
+      if (window.__pct[pat2] >= 25 && productData[pat2]) {
         html += '<div style="font-size:13px;font-weight:600;color:#6b7280;margin:16px 0 8px;">' + pat2 + ' 관련 처방</div>';
         productData[pat2].prescriptions.forEach(function(rxName) {
           // 중복 방지
